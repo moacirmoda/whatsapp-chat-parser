@@ -47,6 +47,9 @@ class MessageAndroid:
         if 'saiu' in self.message:
             return True
         return False
+    
+    def __str__(self):
+        return self.raw_message
 
 
 def _load_chat_from_android(filename):
@@ -69,14 +72,19 @@ def _generate_report_data_from_android(directory):
 
     for filename in glob(f'{directory}/*.txt'):
         for message in _load_chat_from_android(filename):
-            if message.is_joined:
+            
+            if not message.number in numbers:
                 numbers[message.number] = {
                     'number': message.number,
-                    'date_joined': message.date,
-                    'hour_joined': message.hour,
+                    'date_joined': None,
+                    'hour_joined': None,
                     'date_left': None,
                     'hour_left': None,
                 }
+
+            if message.is_joined:
+                numbers[message.number]['date_joined'] = message.date
+                numbers[message.number]['hour_joined'] = message.hour
         
             if message.is_left:
                 numbers[message.number]['date_left'] = message.date
